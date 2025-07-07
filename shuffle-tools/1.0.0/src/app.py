@@ -24,6 +24,8 @@ from json2xml.utils import readfromstring
 from ioc_finder import find_iocs
 from walkoff_app_sdk.app_base import AppBase
 
+import ldap3
+import ldap
 
 
 

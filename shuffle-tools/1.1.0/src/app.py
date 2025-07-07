@@ -32,6 +32,10 @@ from walkoff_app_sdk.app_base import AppBase
 import binascii
 import struct
 
+import ldap3
+import ldap
+
+
 class Tools(AppBase):
     """
     An example of a Walkoff App.
