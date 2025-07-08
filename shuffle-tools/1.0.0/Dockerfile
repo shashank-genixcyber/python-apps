@@ -1,27 +1,43 @@
 # Base our app image off of the WALKOFF App SDK image
 FROM frikky/shuffle:app_sdk as base
-
-# We're going to stage away all of the bloat from the build tools so lets create a builder stage
+ 
+# Create builder stage for pip installations
 FROM base as builder
-
-# Install all alpine build tools needed for our pip installs
-RUN apk --no-cache add --update alpine-sdk libffi libffi-dev musl-dev openssl-dev git python3-dev openldap-dev libsasl
-
-# Install all of our pip packages in a single directory that we can copy to our base image later
+ 
+# Install build tools required by python-ldap and SASL support
+RUN apk --no-cache add --update \
+    alpine-sdk \
+    libffi-dev \
+    openssl-dev \
+    python3-dev \
+    musl-dev \
+    openldap-dev \
+    libsasl \
+    git
+ 
+# Prepare install directory
 RUN mkdir /install
 WORKDIR /install
+ 
+# Copy and install Python dependencies
 COPY requirements.txt /requirements.txt
 RUN pip install --no-cache-dir --prefix="/install" -r /requirements.txt
-
-# Switch back to our base image and copy in all of our built packages and source code
+ 
+# Switch back to base image
 FROM base
+ 
+# Copy installed packages and app source
 COPY --from=builder /install /usr/local
 COPY src /app
-
-# Install any binary dependencies needed in our final image
-# RUN apk --no-cache add --update my_binary_dependency
-RUN apk --no-cache add jq git curl
-
-# Finally, lets run our app!
+ 
+# Install runtime dependencies (includes openldap for python-ldap)
+RUN apk --no-cache add --update \
+    jq \
+    git \
+    curl \
+    openldap \
+    libsasl
+ 
+# Set working directory and start the app
 WORKDIR /app
 CMD ["python", "app.py", "--log-level", "DEBUG"]
