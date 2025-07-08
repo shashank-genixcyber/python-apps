@@ -42,7 +42,6 @@ import concurrent.futures
 import multiprocessing
 
 import ldap3
-import ldap
 
 #from walkoff_app_sdk.app_base import AppBase
 from shuffle_sdk import AppBase

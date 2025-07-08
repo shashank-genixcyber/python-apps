@@ -33,7 +33,6 @@ import binascii
 import struct
 
 import ldap3
-import ldap
 
 
 class Tools(AppBase):
