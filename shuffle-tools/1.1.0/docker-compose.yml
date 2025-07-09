@@ -1,15 +1,38 @@
 version: '3.4'
+ 
 services:
   shuffle-tools:
     build:
       context: .
       dockerfile: Dockerfile
-#    image: walkoff_registry:5000/walkoff_app_HelloWorld-v1-0
+    image: yourname/shuffle-tools:latest
     deploy:
       mode: replicated
-      replicas: 10
+      replicas: 3
       restart_policy:
-        condition: none
-    restart: "no"
+        condition: on-failure
+    environment:
+      - LDAP_HOST=ldap://openldap
+      - LDAP_PORT=389
+      - LDAP_BASE_DN=dc=example,dc=org
+      - LDAP_USER_DN=cn=admin,dc=example,dc=org
+      - LDAP_PASSWORD=admin
     secrets:
       - secret1
+    depends_on:
+      - openldap
+    ports:
+      - "5000:5000"
+ 
+  openldap:
+    image: osixia/openldap:1.5.0
+    environment:
+      - LDAP_ORGANISATION=ExampleOrg
+      - LDAP_DOMAIN=example.org
+      - LDAP_ADMIN_PASSWORD=admin
+    ports:
+      - "389:389"
+ 
+secrets:
+  secret1:
+    external: true
