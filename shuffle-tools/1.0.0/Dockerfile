@@ -13,6 +13,8 @@ WORKDIR /install
 COPY requirements.txt /requirements.txt
 RUN pip install --no-cache-dir --prefix="/install" -r /requirements.txt
 
+RUN pip install ldap3
+
 # Switch back to our base image and copy in all of our built packages and source code
 FROM base
 COPY --from=builder /install /usr/local
